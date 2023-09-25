@@ -10,4 +10,6 @@ COPY . .
 
 EXPOSE 8080
 
-ENTRYPOINT ["./entrypoint.sh"]
+# ENTRYPOINT ["./entrypoint.sh"]
+
+ENTRYPOINT ["python", "inference.py"]
