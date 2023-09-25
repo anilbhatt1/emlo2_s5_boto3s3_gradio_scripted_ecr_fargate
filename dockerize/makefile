@@ -44,3 +44,6 @@ run-image:
 
 run:
 	docker run -it -p 8080:8080 ${IMAGE_NAME}:latest -m 's3://emlo2s5/model_weights/model.script.pt' -f 's3://emlo2s5/inference_outputs'
+
+run-no-s3:
+	docker run -it -p 8080:8080 ${IMAGE_NAME}:latest -f 's3://emlo2s5/inference_outputs'
