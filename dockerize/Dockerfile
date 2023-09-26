@@ -12,6 +12,6 @@ EXPOSE 8080
 
 # ENTRYPOINT ["./entrypoint.sh"]
 
-# ENTRYPOINT ["python", "inference.py"]
+ENTRYPOINT ["python", "inference.py"]
 
-ENTRYPOINT ["python", "inference_no_s3.py"]
+# ENTRYPOINT ["python", "inference_no_s3.py"]
