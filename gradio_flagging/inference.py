@@ -3,7 +3,8 @@ import boto3
 import gradio as gr
 from torchvision import transforms as T
 import argparse
-import CSVLoggerS3, get_pylogger
+import yaml
+import os
 
 default_model_path  = "s3://emlo2s5/model.script.pt"
 default_output_path = "s3://emlo2s5/outputs"
@@ -14,6 +15,14 @@ parser.add_argument('-m', '--model', type=str, default=default_model_path, metav
 
 parser.add_argument('-f', '--flagged-dir', type=str, default=default_output_path, metavar='N',
                     help='Image path for saving inference outputs')
+
+# Load the YAML file present in same directory
+with open('config.yaml', 'r') as yaml_file:
+    cfg = yaml.load(yaml_file, Loader=yaml.FullLoader)
+print('Config is {cfg}')
+hf_token = cfg['hf']
+hf_writer = gr.HuggingFaceDatasetSaver(hf_token, "emlo2s5-sample-flagging-HF-dataset")
+print('hf_writer created')
 
 def download_model(s3_bucket_path):
     # Initialize an S3 client
@@ -30,6 +39,10 @@ def download_model(s3_bucket_path):
     local_path = './' + model_file_name
 
     # Use the S3 client to download the file
+    if os.path.exists(local_path):
+        print(f'File {model_file_name} already exists in {local_path}')
+        return model_file_name
+    
     try:
         s3.download_file(bucket_name, s3_file_path, local_path)
         print(f'Successfully downloaded {model_file_name} to {local_path}')
@@ -59,10 +72,10 @@ def demo(model_file_name, output_path):
         outputs=[gr.Label(num_top_classes=10)],
         allow_flagging="manual",
         flagging_dir="flagged",
-        flagging_callback=CSVLoggerS3(s3_dir=output_path, to_s3=True),
+        flagging_callback=hf_writer,
     )
 
-    demo.launch(server_port=8080, share=True)
+    demo.launch(debug=True, share=True)
 
 if __name__ == "__main__":
     args = parser.parse_args()
