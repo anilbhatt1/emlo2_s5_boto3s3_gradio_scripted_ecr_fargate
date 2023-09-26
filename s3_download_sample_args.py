@@ -1,7 +1,7 @@
 import boto3
 import argparse
 
-default_model_path = "s3://emlo2s5/model.script.pt"
+default_model_path = "s3://emlo2s5/model_weights/model.script.pt"
 default_output_path = "s3://emlo2s5/outputs"
 
 parser = argparse.ArgumentParser(description='Docker based Inferencing')
@@ -17,15 +17,15 @@ def download_model(s3_bucket_path):
 
     # Specify the bucket name and file name
     lst = s3_bucket_path.split('/')
-    model_file_name = lst[-1]
+    model_file_name = lst[-1]  # For s3://emlo2s5/model_weights/model.script.pt it will be 'model.script.pt``
     print('Model file Name is: ', model_file_name, 'lst is :', lst)
-    bucket_name = lst[2]
+    bucket_name = lst[2] # Here emlo2s5
     print('Bucket Name is: ', bucket_name)
-    lst2 = lst[3:]
+    lst2 = lst[3:]  # Here 'model_weights/model.script.pt'
     s3_file_path = '/'.join(lst2)
     print('S3 File Path is: ', s3_file_path)
 
-    # Specify the local path where you want to save the downloaded file
+    # Specify the local path where you want to save the downloaded file - './model.script.pt'
     local_path = './' + model_file_name
 
     # Use the S3 client to download the file
